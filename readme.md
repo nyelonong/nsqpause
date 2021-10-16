@@ -7,7 +7,7 @@
 
 # Worker Pool
 - `1 <= n <= len(target)` 
-- `0` for unlimited pool depend 
+- `0` for unlimited pool depend on how many the targets
 
 # Target
     Array of topics or channels
