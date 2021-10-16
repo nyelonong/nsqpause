@@ -1,0 +1,8 @@
+nsqadmin: "http://127.0.0.1:4171"
+action: "pause"
+worker: 3 
+target: [
+  "topicsatu/channelsatu",
+  "topicsatu/channeldua",
+  "topicdua"
+]
