@@ -54,6 +54,10 @@ func (c *Config) validate() error {
 		return errors.New("topic / channel can not be empty.")
 	}
 
+	if len(c.Target) < c.Worker {
+		return errors.New("num of worker cannot exceed the number of target")
+	}
+
 	// Unlimited workerpool
 	if c.Worker <= 0 {
 		c.Worker = len(c.Target)
