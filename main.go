@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -33,17 +34,28 @@ func (c *Config) action() {
 	}
 	body.Action = c.Action
 
+	errChan := make(chan error)
+
 	wp := workerpool.New(c.Worker)
 	for _, target := range c.Target {
 		target := target
 		wp.Submit(func() {
+			var err error
 			path := fmt.Sprintf("/api/topics/%s", target)
-			if err := c.nsqAction(path, body); err != nil {
-				log.Println(err)
+			if err = c.nsqAction(path, body); err != nil {
+				errChan <- errors.New(fmt.Sprintf("Target: %s, Error: %s", target, err.Error()))
 				return
 			}
+			errChan <- err
 			fmt.Printf("%s is %sd\n", target, body.Action)
 		})
+	}
+
+	var finalErr error
+	for i := 0; i < len(c.Target); i++ {
+		if finalErr = <-errChan; finalErr != nil {
+			log.Println(finalErr)
+		}
 	}
 
 	wp.StopWait()
